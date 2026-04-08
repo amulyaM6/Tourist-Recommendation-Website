@@ -1,0 +1,22 @@
+{
+  "name": "tourist-recommendation-platform",
+  "version": "1.0.0",
+  "description": "Travel destination recommendation web platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "travel",
+    "recommendation",
+    "tourism",
+    "node",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

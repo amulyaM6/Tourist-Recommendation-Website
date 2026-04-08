@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wandr — Travel Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0d0d;
+  --white: #f9f5ef;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --muted: rgba(249,245,239,0.45);
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ───── HERO ───── */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hero-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.8s ease;
+}
+
+.slide.active { opacity: 1; animation: slowZoom 14s ease-in-out forwards; }
+
+@keyframes slowZoom {
+  from { transform: scale(1.06); }
+  to   { transform: scale(1.0); }
+}
+
+.slide-3 { background-image: url('https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=1800&q=85'); }
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(0,0,0,0.18) 0%,
+    rgba(0,0,0,0.08) 35%,
+    rgba(0,0,0,0.55) 75%,
+    rgba(13,13,13,1) 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.25rem 3.5rem;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--white);
+  text-transform: uppercase;
+}
+
+.logo-dot { color: var(--gold); }
+
+.nav-pill {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.35);
+  padding: 0.45rem 1.1rem;
+  border-radius: 2rem;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.25);
+}
+
+.hero-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 3.5rem 4.5rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+  opacity: 0;
+  animation: riseIn 1s 0.3s ease forwards;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.2rem, 7.5vw, 7rem);
+  font-weight: 400;
+  line-height: 1.03;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+  opacity: 0;
+  animation: riseIn 1s 0.5s ease forwards;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.hero-sub {
+  font-size: 0.92rem;
+  font-weight: 300;
+  color: rgba(249,245,239,0.72);
+  max-width: 42ch;
+  line-height: 1.85;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: riseIn 1s 0.7s ease forwards;
+}
+
+.hero-cta {
+  opacity: 0;
+  animation: riseIn 1s 0.9s ease forwards;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--gold);
+  padding: 0.95rem 2.2rem;
+  border-radius: 0.4rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+  text-decoration: none;
+}
+
+.btn-scroll:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+.hero-caption {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: rgba(249,245,239,0.35);
+  text-transform: uppercase;
+}
+
+/* ───── FORM SECTION ───── */
+.form-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 5.5rem 2rem 3rem;
+}
+
+.section-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.9rem;
+}
+
+.chip-line {
+  width: 2rem; height: 1px;
+  background: var(--gold);
+  opacity: 0.45;
+}
+
+.form-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 400;
+  margin-bottom: 2.5rem;
+  line-height: 1.15;
+  color: var(--white);
+}
+
+.glass-form {
+  background: rgba(255,255,255,0.028);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.25rem;
+  padding: 2.75rem;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.5rem; }
+.field.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+input, select, textarea {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 300;
+  background: rgba(255,255,255,0.042);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 0.5rem;
+  padding: 0.88rem 1.1rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(201,168,76,0.55);
+  background: rgba(201,168,76,0.04);
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(249,245,239,0.25)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+select option { background: #1c1c1c; color: var(--white); }
+textarea { resize: vertical; min-height: 85px; line-height: 1.75; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem; }
+
+.tag {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.73rem;
+  font-weight: 400;
+  padding: 0.45rem 1.05rem;
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 2rem;
+  cursor: pointer;
+  background: transparent;
+  color: rgba(249,245,239,0.55);
+  transition: all 0.2s;
+}
+
+.tag:hover { border-color: var(--gold); color: var(--gold); }
+.tag.active { background: var(--gold); border-color: var(--gold); color: var(--bg); font-weight: 500; }
+
+.submit-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.btn-discover {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 1rem 2.4rem;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.btn-discover:hover { background: var(--gold-light); transform: translateY(-2px); }
+.btn-discover:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.feature-form-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0.5rem 2rem 2rem;
+}
+
+.mini-btn-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-mini {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.62rem 0.95rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(201,168,76,0.35);
+  background: rgba(201,168,76,0.08);
+  color: var(--gold-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mini:hover {
+  background: rgba(201,168,76,0.2);
+  border-color: rgba(201,168,76,0.65);
+}
+
+.check-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.check-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(249,245,239,0.75);
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+}
+
+.status-box {
+  min-height: 2rem;
+  margin-top: 0.35rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.55rem;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(249,245,239,0.82);
+  font-size: 0.8rem;
+}
+
+.saved-box {
+  margin-top: 0.55rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.55rem;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: rgba(249,245,239,0.78);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.feature-output {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(201,168,76,0.22);
+  background: rgba(201,168,76,0.06);
+  font-size: 0.82rem;
+  color: rgba(249,245,239,0.86);
+  line-height: 1.6;
+}
+
+.tool-chip-row {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.tool-chip {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #f9f5ef;
+  padding: 0.36rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.tool-chip:hover {
+  border-color: rgba(201,168,76,0.7);
+  color: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+.tool-chip:active {
+  transform: scale(0.97);
+}
+
+.tool-chip.selected {
+  background: rgba(201,168,76,0.2);
+  border-color: rgba(201,168,76,0.85);
+  color: var(--gold-light);
+  animation: chipPulse 0.4s ease;
+}
+
+@keyframes chipPulse {
+  0% { transform: scale(0.94); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.compare-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0,0,0,0.58);
+  backdrop-filter: blur(6px);
+  z-index: 40;
+}
+
+.compare-modal.visible { display: flex; }
+
+.compare-card {
+  width: min(980px, 100%);
+  max-height: 84vh;
+  overflow: auto;
+  background: rgba(15,15,15,0.95);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.compare-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.compare-title {
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.compare-close {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.compare-table th, .compare-table td {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.6rem;
+  vertical-align: top;
+}
+
+.compare-table th {
+  color: var(--gold-light);
+  background: rgba(201,168,76,0.08);
+}
+
+.itinerary-drawer {
+  position: fixed;
+  top: 0;
+  right: -440px;
+  width: min(440px, 92vw);
+  height: 100vh;
+  background: rgba(14,14,14,0.97);
+  border-left: 1px solid rgba(201,168,76,0.28);
+  z-index: 45;
+  transition: right 0.28s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.itinerary-drawer.visible { right: 0; }
+
+.drawer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.drawer-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.drawer-close {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--white);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+}
+
+.drawer-body {
+  overflow: auto;
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.day-card {
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.03);
+  border-radius: 0.7rem;
+  padding: 0.65rem 0.7rem;
+}
+
+.day-card strong {
+  color: var(--gold-light);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ───── LOADING ───── */
+.loading-state {
+  display: none;
+  text-align: center;
+  padding: 5rem 2rem;
+}
+.loading-state.visible { display: block; }
+
+.globe-loader {
+  width: 2.8rem; height: 2.8rem;
+  border: 2px solid rgba(201,168,76,0.18);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+.loading-txt {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ───── RESULTS ───── */
+.results-wrap {
+  display: none;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 2rem 7rem;
+}
+.results-wrap.visible { display: block; }
+
+.results-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 400;
+  margin-bottom: 2.25rem;
+  color: var(--white);
+}
+.results-heading span { font-style: italic; color: var(--gold); }
+
+.places-grid { display: grid; gap: 1.75rem; }
+
+/* CARD */
+.place-card {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: var(--card);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: translateY(28px);
+  animation: riseIn 0.65s ease forwards;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.place-card:hover {
+  border-color: rgba(201,168,76,0.28);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+/* Card image */
+.card-image {
+  position: relative;
+  overflow: hidden;
+  min-height: 240px;
+  background: #181818;
+}
+
+.card-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s ease;
+}
+
+.place-card:hover .card-image img { transform: scale(1.07); }
+
+.img-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(0,0,0,0.28) 0%, transparent 55%);
+  z-index: 1;
+}
+
+.card-num-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  background: rgba(0,0,0,0.5);
+  color: var(--gold);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(201,168,76,0.25);
+}
+
+/* Placeholder while image loads */
+.img-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, #181818 30%, #222 50%, #181818 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.img-fallback-label {
+  position: absolute;
+  inset: 0;
+  display: none;
+  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(249,245,239,0.88);
+  background: linear-gradient(140deg, rgba(25,25,25,0.94), rgba(45,37,20,0.94));
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Card body */
+.card-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.card-location {
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--white);
+}
+
+.card-tagline {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: rgba(249,245,239,0.42);
+  line-height: 1.5;
+  margin-top: 0.3rem;
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: rgba(249,245,239,0.7);
+  flex: 1;
+  margin-top: 0.5rem;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.card-tag {
+  font-size: 0.57rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid rgba(201,168,76,0.28);
+  color: var(--gold);
+  border-radius: 2rem;
+}
+
+.card-why {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 1rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: rgba(249,245,239,0.45);
+}
+
+.card-why strong {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.7rem;
+  color: rgba(201,168,76,0.65);
+  display: block;
+  margin-bottom: 0.3rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Error */
+.error-box {
+  display: none;
+  padding: 1.5rem;
+  border: 1px solid rgba(220,100,100,0.25);
+  border-radius: 0.75rem;
+  background: rgba(220,100,100,0.05);
+  color: rgba(255,160,160,0.85);
+  font-size: 0.8rem;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+.error-box.visible { display: block; }
+
+/* Animations */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 700px) {
+  nav { padding: 1.5rem; }
+  .hero-body { padding: 0 1.5rem 3.5rem; }
+  .form-wrap, .results-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .glass-form { padding: 1.5rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .field.full { grid-column: 1; }
+  .place-card { grid-template-columns: 1fr; }
+  .card-image { min-height: 200px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ HERO ══════ -->
+<section class="hero">
+  <div class="hero-slideshow">
+    <div class="slide slide-3 active"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <nav>
+      <div class="logo">W<span class="logo-dot">·</span>ANDR</div>
+      <div class="nav-pill">Travel Discovery</div>
+    </nav>
+
+    <div class="hero-body">
+      <p class="hero-eyebrow">✦ Curated for your travel style</p>
+      <h1>Where will<br><em>wonder</em><br>take you?</h1>
+      <p class="hero-sub">Tell us who you are and how you love to explore. We'll find destinations that feel like they were made for you — and only you.</p>
+      <div class="hero-cta">
+        <a href="#discover" class="btn-scroll">
+          Start Exploring
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 1v10M1 7l5 4 5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <span class="hero-caption"> Tailored picks • Instant results</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FORM ══════ -->
+<div id="discover" class="form-wrap">
+  <div class="section-chip"><div class="chip-line"></div>Your travel profile</div>
+  <h2 class="form-heading">Tell us about<br>your dream trip</h2>
+
+  <div class="glass-form">
+    <div class="form-grid">
+      <div class="field">
+        <label>Trip Duration</label>
+        <select id="duration">
+          <option value="">How long are you going?</option>
+          <option>Weekend (2–3 days)</option>
+          <option>Short trip (4–7 days)</option>
+          <option>Two weeks</option>
+          <option>A month or more</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Who's Travelling?</label>
+        <select id="traveller">
+          <option value="">Select traveller type</option>
+          <option>Solo adventurer</option>
+          <option>Couple</option>
+          <option>Family with kids</option>
+          <option>Group of friends</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Budget Style</label>
+        <select id="budget">
+          <option value="">Select your budget</option>
+          <option>Backpacker (keep it lean)</option>
+          <option>Mid-range (comfortable)</option>
+          <option>Luxury (no limits)</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>What excites you most? Pick all that apply</label>
+        <div class="tags" id="interests">
+          <button class="tag" data-val="history & culture">History & Culture</button>
+          <button class="tag" data-val="nature & hiking">Nature & Hiking</button>
+          <button class="tag" data-val="food & local cuisine">Local Cuisine</button>
+          <button class="tag" data-val="beaches & water sports">Beaches & Water</button>
+          <button class="tag" data-val="adventure sports">Adventure Sports</button>
+          <button class="tag" data-val="art & architecture">Art & Architecture</button>
+          <button class="tag" data-val="nightlife & music">Nightlife</button>
+          <button class="tag" data-val="wellness & spas">Wellness & Spas</button>
+          <button class="tag" data-val="wildlife & safaris">Wildlife & Safaris</button>
+          <button class="tag" data-val="hidden gems off the beaten path">Hidden Gems</button>
+          <button class="tag" data-val="photography">Photography</button>
+          <button class="tag" data-val="luxury resorts">Luxury Resorts</button>
+        </div>
+      </div>
+
+      <div class="field full">
+        <label>Anything else? (dietary needs, accessibility, vibe…)</label>
+        <textarea id="extras" placeholder="e.g. I love slow mornings, hate tourist traps, vegetarian food is a must, wheelchair accessible…"></textarea>
+      </div>
+
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-discover" id="discoverBtn" onclick="discover()">
+        Discover My Places
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 6.5h9M7 2l4.5 4.5L7 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ LOADING ══════ -->
+<div class="loading-state" id="loading">
+  <div class="globe-loader"></div>
+  <div class="loading-txt">Curating your perfect journey…</div>
+</div>
+
+<!-- ══════ RESULTS ══════ -->
+<div class="results-wrap" id="results">
+  <div class="section-chip"><div class="chip-line"></div>Handpicked for you</div>
+  <h2 class="results-heading">Your <span>destinations</span> await</h2>
+  <div class="error-box" id="errorBox"></div>
+  <div class="places-grid" id="placesGrid"></div>
+  <div id="featureOutput" class="feature-output"></div>
+</div>
+
+<div class="compare-modal" id="compareModal">
+  <div class="compare-card">
+    <div class="compare-head">
+      <div class="compare-title">Destination Compare Table</div>
+      <button class="compare-close" onclick="closeCompareModal()">Close</button>
+    </div>
+    <div id="compareTableWrap"></div>
+  </div>
+</div>
+
+<div class="itinerary-drawer" id="itineraryDrawer">
+  <div class="drawer-head">
+    <div class="drawer-title" id="drawerTitle">Itinerary Plan</div>
+    <button class="drawer-close" onclick="closeItineraryDrawer()">Close</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+let latestRecommendations = [];
+const compareSelection = new Set();
+
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'compareModal') {
+    closeCompareModal();
+  }
+});
+
+document.querySelectorAll('.tag').forEach(t =>
+  t.addEventListener('click', () => t.classList.toggle('active'))
+);
+
+function getImageSeed(name, country) {
+  return (name + country).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+}
+
+const photoPool = [
+  '1506905925346-21bda4d32df4',
+  '1476514525535-07fb3b4ae5f1',
+  '1493246507139-91e8fad9978e',
+  '1552832230-c0197dd311b5',
+  '1523906834658-6e24ef2386f9',
+  '1528702748617-c64d49f918af',
+  '1469854523086-cc02fe5d8800',
+  '1502602898657-3e91760cbb34',
+  '1500039436846-25ae2f11882e',
+  '1540202404-d0af61742628',
+  '1516483638261-f4dbaf036963',
+  '1524492412937-b28074a5d7da',
+  '1562786526-d06d3a43c638',
+  '1547981609-4b9a7a2e3f2f',
+  '1551632811-561732d1e306'
+];
+
+function normalizePlaceName(name) {
+  return (name || '')
+    .replace(/\(.*?\)/g, '')
+    .replace(/\s*\+\s*/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pickPhoto(name, country, variant = 0) {
+  const cleanName = normalizePlaceName(name);
+  const cleanCountry = normalizePlaceName(country);
+  const seed = getImageSeed(cleanName, cleanCountry) + variant * 101;
+  return photoPool[seed % photoPool.length];
+}
+
+function buildPrimaryImageUrl(name, country, variant = 0) {
+  const photoId = pickPhoto(name, country, variant);
+  return `https://images.unsplash.com/photo-${photoId}?w=1200&q=82&fit=crop`;
+}
+
+function handleImageError(img) {
+  const name = normalizePlaceName(img.dataset.name || 'travel');
+  const country = img.dataset.country || 'world';
+  const attempt = Number(img.dataset.fallbackTried || '0');
+
+  if (attempt === 0) {
+    img.dataset.fallbackTried = '1';
+    img.src = buildPrimaryImageUrl(name, country, 1);
+    return;
+  }
+
+  if (attempt === 1) {
+    img.dataset.fallbackTried = '2';
+    img.src = buildPrimaryImageUrl(name, country, 2);
+    return;
+  }
+
+  if (attempt >= 2) {
+    const safeSeed = encodeURIComponent(`${name}-${country}`);
+    img.onerror = null;
+    img.src = `https://picsum.photos/seed/${safeSeed}/1200/800`;
+  }
+}
+
+function formatBadgeNumber(num) {
+  return String(num).padStart(2, '0');
+}
+
+function renderRatingControls(destinationId) {
+  return `
+    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+      ${[1, 2, 3, 4, 5].map((n) =>
+        `<button onclick="submitFeedback('${destinationId}', ${n})" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#f9f5ef;padding:4px 10px;border-radius:999px;cursor:pointer;">${n}★</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function showFeatureOutput(title, lines) {
+  const box = document.getElementById('featureOutput');
+  box.innerHTML = `<strong>${title}</strong><br>${lines.map((l) => `• ${l}`).join('<br>')}`;
+}
+
+function updateCompareButtonState(destinationId) {
+  const selected = compareSelection.has(destinationId);
+  document.querySelectorAll(`.tool-chip[data-compare-id="${destinationId}"]`).forEach((btn) => {
+    btn.classList.toggle('selected', selected);
+  });
+}
+
+function closeCompareModal() {
+  document.getElementById('compareModal').classList.remove('visible');
+}
+
+function openCompareModal(destinations) {
+  const wrap = document.getElementById('compareTableWrap');
+  if (!destinations.length) {
+    wrap.innerHTML = '<div class="status-box">No destinations selected for comparison.</div>';
+  } else {
+    const headers = destinations.map((d) => `<th>${d.name}<br><span style="font-weight:400;color:rgba(249,245,239,0.65)">${d.country}</span></th>`).join('');
+    const row = (label, fn) => `<tr><th>${label}</th>${destinations.map((d) => `<td>${fn(d)}</td>`).join('')}</tr>`;
+    wrap.innerHTML = `
+      <table class="compare-table">
+        <thead><tr><th>Field</th>${headers}</tr></thead>
+        <tbody>
+          ${row('Trip Style', (d) => d.tagline || '-')}
+          ${row('Budget Tier', (d) => d.budgetTier || '-')}
+          ${row('Ideal Duration', (d) => d.idealTrip || '-')}
+          ${row('Best For', (d) => (d.bestFor || []).join(', ') || '-')}
+          ${row('Top Interests', (d) => (d.tags || []).slice(0, 4).join(', ') || '-')}
+          ${row('Safety / Visa', (d) => `${d.meta?.safetyScore || '-'} / ${d.meta?.visaEase || '-'}`)}
+          ${row('Snapshot', (d) => d.description || '-')}
+        </tbody>
+      </table>
+    `;
+  }
+  document.getElementById('compareModal').classList.add('visible');
+}
+
+function closeItineraryDrawer() {
+  document.getElementById('itineraryDrawer').classList.remove('visible');
+}
+
+function durationToItineraryDays(durationLabel) {
+  const raw = (durationLabel || '').toLowerCase();
+  if (raw.includes('weekend')) return 3;
+  if (raw.includes('short')) return 6;
+  if (raw.includes('two weeks')) return 12;
+  if (raw.includes('month')) return 14;
+  return 5;
+}
+
+function openItineraryDrawer(title, itinerary) {
+  document.getElementById('drawerTitle').textContent = title;
+  const body = document.getElementById('drawerBody');
+  body.innerHTML = itinerary.length
+    ? itinerary.map((d) => `
+      <div class="day-card">
+        <strong>Day ${d.day}</strong><br>
+        <div>${d.morning}</div>
+        <div style="margin-top:0.35rem; color:rgba(249,245,239,0.78)">${d.afternoon || ''}</div>
+        <div style="margin-top:0.35rem; color:rgba(249,245,239,0.72)">${d.evening || ''}</div>
+        <div style="margin-top:0.45rem; color:rgba(201,168,76,0.9)">Example place: ${d.exampleSpot || 'Local landmark'}</div>
+        <div style="margin-top:0.3rem; font-size:0.72rem; color:rgba(249,245,239,0.62)">${d.note || ''}</div>
+      </div>
+    `).join('')
+    : '<div class="status-box">No itinerary data available.</div>';
+  document.getElementById('itineraryDrawer').classList.add('visible');
+}
+
+async function toggleCompare(destinationId) {
+  if (compareSelection.has(destinationId)) {
+    compareSelection.delete(destinationId);
+  } else if (compareSelection.size < 3) {
+    compareSelection.add(destinationId);
+  }
+  updateCompareButtonState(destinationId);
+
+  if (compareSelection.size < 2) {
+    showFeatureOutput('Compare Mode', ['Select at least 2 places to compare.']);
+    closeCompareModal();
+    return;
+  }
+
+  const res = await fetch('/api/compare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destinationIds: [...compareSelection] })
+  });
+  const data = await res.json();
+  const rows = (data.destinations || []).map((d) => `${d.name} (${d.country})`);
+  showFeatureOutput('Compare Mode', rows);
+  openCompareModal(data.destinations || []);
+}
+
+async function getItinerary(destinationId, duration) {
+  const days = durationToItineraryDays(duration);
+  const res = await fetch('/api/itinerary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destinationId, days })
+  });
+  const data = await res.json();
+  const lines = (data.itinerary || []).slice(0, 5).map((d) => `Day ${d.day}: ${d.morning}`);
+  showFeatureOutput(`${data.destination || 'Itinerary'} Plan`, lines);
+  openItineraryDrawer(`${data.destination || 'Itinerary'} Plan`, data.itinerary || []);
+}
+
+async function submitFeedback(destinationId, rating) {
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destinationId, rating })
+    });
+  } catch (error) {
+    console.error('Feedback failed', error);
+  }
+}
+
+async function discover() {
+  const duration = document.getElementById('duration').value;
+  const traveller = document.getElementById('traveller').value;
+  const budget = document.getElementById('budget').value;
+  const extras = document.getElementById('extras').value.trim();
+  const interests = [...document.querySelectorAll('.tag.active')].map(t => t.dataset.val);
+
+  const btn = document.getElementById('discoverBtn');
+  const loading = document.getElementById('loading');
+  const resultsWrap = document.getElementById('results');
+  const placesGrid = document.getElementById('placesGrid');
+  const errorBox = document.getElementById('errorBox');
+
+  errorBox.classList.remove('visible');
+  resultsWrap.classList.remove('visible');
+  placesGrid.innerHTML = '';
+
+  const hasMeaningfulInput =
+    Boolean(duration) ||
+    Boolean(traveller) ||
+    Boolean(budget) ||
+    Boolean(extras) ||
+    interests.length > 0;
+
+  if (!hasMeaningfulInput) {
+    resultsWrap.classList.add('visible');
+    errorBox.textContent = 'Please enter at least one travel detail to get recommendations.';
+    errorBox.classList.add('visible');
+    return;
+  }
+
+  btn.disabled = true;
+  loading.classList.add('visible');
+
+  try {
+    const response = await fetch('/api/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        duration,
+        traveller,
+        budget,
+        interests,
+        extras
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || 'API request failed');
+    }
+
+    const data = await response.json();
+    const places = data.recommendations || [];
+    latestRecommendations = places;
+
+    loading.classList.remove('visible');
+    resultsWrap.classList.add('visible');
+
+    const totalCount = places.length;
+
+    places.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'place-card';
+      card.style.animationDelay = `${i * 0.13}s`;
+
+      const imgUrl = buildPrimaryImageUrl(p.name, p.country);
+
+      card.innerHTML = `
+        <div class="card-image">
+          <div class="img-shimmer"></div>
+          <img src="${imgUrl}"
+               alt="${p.name}, ${p.country}"
+               data-name="${p.name}"
+               data-country="${p.country}"
+               loading="lazy"
+               onload="this.previousElementSibling.style.display='none'"
+               onerror="handleImageError(this)">
+          <div class="img-gradient"></div>
+          <div class="card-num-badge">${formatBadgeNumber(i + 1)} / ${formatBadgeNumber(totalCount)}</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-location">📍 ${p.country}</div>
+            <div class="card-name">${p.name}</div>
+            <div class="card-tagline">${p.tagline}</div>
+            <div class="card-desc">${p.description}</div>
+            <div class="card-tags">${(p.tags || []).map(t => `<span class="card-tag">${t}</span>`).join('')}</div>
+            <div class="tool-chip-row">
+              <button onclick="toggleCompare('${p.id}')" class="tool-chip ${compareSelection.has(p.id) ? 'selected' : ''}" data-compare-id="${p.id}">Compare</button>
+              <button onclick="getItinerary('${p.id}', '${duration}')" class="tool-chip">Itinerary</button>
+            </div>
+          </div>
+          <div class="card-why">
+            <strong>Why it's perfect for you</strong>
+            ${p.whyItFits}
+            ${renderRatingControls(p.id)}
+          </div>
+        </div>
+      `;
+      placesGrid.appendChild(card);
+    });
+
+    resultsWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    loading.classList.remove('visible');
+    resultsWrap.classList.add('visible');
+    errorBox.textContent = err.message || 'Something went wrong fetching recommendations. Please try again.';
+    errorBox.classList.add('visible');
+    console.error(err);
+  }
+
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
