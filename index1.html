@@ -1270,7 +1270,7 @@ async function discover() {
       card.className = 'place-card';
       card.style.animationDelay = `${i * 0.13}s`;
 
-      const imgUrl = buildPrimaryImageUrl(p.name, p.country);
+      const imgUrl = `https://source.unsplash.com/800x600/?${p.name},${p.country},landmark,tourism`;
 
       card.innerHTML = `
         <div class="card-image">
@@ -1281,7 +1281,7 @@ async function discover() {
                data-country="${p.country}"
                loading="lazy"
                onload="this.previousElementSibling.style.display='none'"
-               onerror="handleImageError(this)">
+               onerror="this.src='https://picsum.photos/800/600'">
           <div class="img-gradient"></div>
           <div class="card-num-badge">${formatBadgeNumber(i + 1)} / ${formatBadgeNumber(totalCount)}</div>
         </div>
